@@ -1,0 +1,6 @@
+# Ignore Google Drive data
+*.csv
+*.parquet
+*.h5
+*.zip
+/Users/luke/Library/CloudStorage/GoogleDrive-*/
