@@ -8,7 +8,7 @@ import numpy as np
 
 script_dir = os.path.dirname(__file__)
 INPUT_DIR  = os.path.abspath(os.path.join(script_dir, '..', '..', 'Data', 'Data_Medium_Resampled'))  # <-- put all TF CSVs here
-OUTPUT_DIR = os.path.abspath(os.path.join(script_dir, '..', '..', 'Data', 'Feature_SandPit','3CD'))
+OUTPUT_DIR = os.path.abspath(os.path.join(script_dir, '..', '..', 'Data', 'Feature_SandPit','3CD', 'Test'))
 
 # Map timeframe label -> filename in INPUT_DIR
 # Edit names to match your files

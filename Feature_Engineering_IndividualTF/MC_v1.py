@@ -5,34 +5,31 @@ import matplotlib.dates as mdates
 import datetime
 import os
 
+# === Paths ===
 INPUT_DIR  = "/Users/lukesalter/Library/CloudStorage/GoogleDrive-luke.salter111@gmail.com/My Drive/Machine_Learning/Project7_data/Data_Medium/Data_Medium_Resampled"
 OUTPUT_DIR = os.path.join(INPUT_DIR, "Processed")
+os.makedirs(OUTPUT_DIR, exist_ok=True)
 
 file_path = os.path.join(INPUT_DIR, "Data_1m.csv")
-df = pd.read_csv(file_path, sep=',', header=None)
+
+# === Load data ===
+df = pd.read_csv(file_path, sep=",", header=0)
 df.columns = ['datetime', 'open', 'high', 'low', 'close', 'volume']
 
+# Parse timezone-aware datetime -> convert to UTC
+df['datetime'] = pd.to_datetime(df['datetime'], utc=True)
 
-# Assign column names
-df.columns = ['datetime', 'open', 'high', 'low', 'close', 'volume']
-
-# Parse datetime string
-df['datetime'] = pd.to_datetime(df['datetime'], format='%Y%m%d %H%M%S')
-
-# (Momentum logic continues here as before...)
 # Drop the first day (irregular timestamps)
-first_day = df['datetime'].dt.date.min()
-df = df[df['datetime'].dt.date > first_day].copy()
-df.reset_index(drop=True, inplace=True)
+#first_day = df['datetime'].dt.date.min()
+#df = df[df['datetime'].dt.date > first_day].copy()
+#df.reset_index(drop=True, inplace=True)
 
-
-# Initialize output column
+# === Momentum candle feature ===
 momentum_active = [0] * len(df)
 active_state = 0  # 0 = inactive, 1 = bullish, -1 = bearish
 ref_high = None
 ref_low = None
 
-# Loop through each candle
 for i in range(1, len(df)):
     prev_close = df['close'].iloc[i - 1]
     prev_high = df['high'].iloc[i - 1]
@@ -77,20 +74,20 @@ for i in range(1, len(df)):
         else:
             momentum_active[i] = -1
 
-# Add to DataFrame
 df['momentum_candle_active'] = momentum_active
 
-# Save to CSV
-df.to_csv('NQ_03-24_with_momentum.csv', index=False)
-print("Saved to NQ_03-24_with_momentum.csv")
+# === Save output ===
+output_path = os.path.join(OUTPUT_DIR, "NQ_03-24_with_momentum.csv")
+df.to_csv(output_path, index=False)
+print("Saved to", output_path)
 
-# Plotting first 100 candles
+# === Plot first 100 candles ===
 subset = df.iloc[:100]
 
 fig, ax = plt.subplots(figsize=(16, 8))
-for idx, row in subset.iterrows():
+for _, row in subset.iterrows():
     color = 'green' if row['close'] >= row['open'] else 'red'
-    
+
     # Wick
     ax.plot([row['datetime'], row['datetime']], [row['low'], row['high']], color='black')
 
